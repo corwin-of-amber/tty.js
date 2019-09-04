@@ -3,21 +3,73 @@
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="user.css">
 
-<h1>tty.js</h1>
+<h1></h1>
 
-<div id="help">
-  <p>Click the titlebar to drag.</p>
-  <p>Double-click titlebar to maximize.</p>
-  <p>Click the lower-right corner to resize.</p>
-  <p>Click the tilde to open a new tab.</p>
-  <p>Click the tilde with a modifier to close the window.</p>
-</div>
+<button id="open">&#9635;</button>
+<button id="run">&#9658;</button>
 
-<button id="open">Open Terminal</button>
-<button id="lights">Light Switch</button>
+<ul id="files"></ul>
 
+<textarea id="editor" style="visibility: hidden">class A  { }</textarea>
+
+<script src="js/lib/jquery/jquery-1.10.2.js"></script>
+<script src="js/lib/underscore.js/underscore-min.js"></script>
+<script src="js/lib/backbone.js/backbone-min.js"></script>
 <script src="socket.io/socket.io.js"></script>
 <script src="term.js"></script>
 <script src="options.js"></script>
 <script src="tty.js"></script>
 <script src="user.js"></script>
+
+<!--  CodeMirror -->
+    <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css">
+    <script src="js/lib/codemirror/lib/codemirror.js"></script>
+    <script src="js/lib/codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="js/lib/codemirror/mode/clike/clike.js"></script>
+<!--   -->
+
+
+<script src="js/fileview.js"></script>
+<script src="js/runner.js"></script>
+<script>
+var editor;
+$(function() {
+    tty.load();
+    if (location.search) {
+        d = location.search.substr(1);
+        tty.local_conf = {cwd: d};
+        cd(d);
+        runner.script = d + "/.script";
+    }
+    else {
+        cd('.');
+        runner.script = "./.script";
+    }
+    Terminal.geometry[0] = 40;
+    Terminal.geometry[1] = 14;
+
+    var own_event = undefined;
+    
+    fv.on('click-item', function(itemview) { 
+        var m = itemview.model;
+        if (m.get('kind') == "regular") {
+            s.emit('fs load', m.get('fullpath'),
+          	    function(text) {
+	                editor = create_codemirror_in_window("editor", m.get('name'));
+	                if (own_event) editor.off("change", own_event);
+	                editor.setValue(text); 
+	        	    editor.on("change", own_event = function(cm, co) {
+	        	    	s.emit('fs save', m.get('fullpath'), cm.getValue(),
+	        	    	        function() {  });
+	        	    });
+                });
+	      }
+    });
+    
+    $("#run").click(function () {
+        var args = runner.config.args;
+        run_script("regex", runner.script + " '" + args[0] + "' '" + args[1] + "'");
+    });
+
+});
+</script>

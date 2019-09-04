@@ -47,6 +47,7 @@ tty.socket;
 tty.windows;
 tty.terms;
 tty.elements;
+tty.local_conf = {};
 
 /**
  * Open
@@ -196,7 +197,7 @@ tty.toggleLights = function() {
  * Window
  */
 
-function Window(socket) {
+function Window(socket, local_conf) {
   var self = this;
 
   EventEmitter.call(this);
@@ -208,7 +209,7 @@ function Window(socket) {
     , title;
 
   el = document.createElement('div');
-  el.className = 'window';
+  el.className = 'window window--terminal';
 
   grip = document.createElement('div');
   grip.className = 'grip';
@@ -237,6 +238,7 @@ function Window(socket) {
 
   this.cols = Terminal.geometry[0];
   this.rows = Terminal.geometry[1];
+  this.local_conf = local_conf || tty.local_conf;
 
   el.appendChild(grip);
   el.appendChild(bar);
@@ -392,8 +394,8 @@ Window.prototype.resizing = function(ev) {
 
   el.style.overflow = 'hidden';
   el.style.opacity = '0.70';
-  el.style.cursor = 'se-resize';
-  root.style.cursor = 'se-resize';
+  el.style.cursor = 'nwse-resize';
+  root.style.cursor = 'nwse-resize';
   term.element.style.height = '100%';
 
   function move(ev) {
@@ -557,7 +559,8 @@ function Tab(win, socket) {
   var self = this;
 
   var cols = win.cols
-    , rows = win.rows;
+    , rows = win.rows
+    , local_conf = win.local_conf;
 
   Terminal.call(this, {
     cols: cols,
@@ -589,7 +592,9 @@ function Tab(win, socket) {
 
   win.tabs.push(this);
 
-  this.socket.emit('create', cols, rows, function(err, data) {
+  this.element.style.background = "transparent"; //rgba(0,0,0,0.5)";
+  
+  this.socket.emit('create', cols, rows, local_conf, function(err, data) {
     if (err) return self._destroy();
     self.pty = data.pty;
     self.id = data.id;
@@ -899,9 +904,11 @@ function load() {
   tty.open();
 }
 
-on(document, 'load', load);
-on(document, 'DOMContentLoaded', load);
-setTimeout(load, 200);
+//on(document, 'load', load);
+//on(document, 'DOMContentLoaded', load);
+//setTimeout(load, 200);
+
+tty.load = load;
 
 /**
  * Expose

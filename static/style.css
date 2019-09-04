@@ -7,6 +7,10 @@ html, body {
   margin: 0;
   padding: 0;
 }
+body {
+  font-size: 125%;
+  overflow: hidden;
+}
 
 div {
   border: 0;
@@ -15,7 +19,8 @@ div {
 }
 
 html {
-  background: #fff;
+  background: url(img/tile.png);
+  /*background-size: cover;*/
 }
 
 html.dark {
@@ -44,13 +49,17 @@ body {
 .window {
   padding-top: 15px;
   border: #fafafa solid 1px;
-  background: #272829;
+  background: rgba(39, 40, 41, 0.8);
   position: absolute;
-  top: 20px;
-  left: 20px;
   z-index: 1000;
   box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
 }
+
+.window--terminal { top: 2em; left: 50%; }
+
+.window--editor { top: 50%; left: 35%; }
+
+.window--run { left: 20%; top: 5em; min-width: 10em; min-height: 3em; }
 
 .maximized .window {
   border: none;
@@ -69,6 +78,7 @@ body {
   height: 13px;
   padding: 1px 0;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+  background: #272829;
   color: #fafafa;
 }
 
@@ -102,7 +112,7 @@ body {
   right: -10px;
   width: 22px;
   height: 22px;
-  cursor: se-resize;
+  cursor: nwse-resize;
   z-index: -1;
   background: transparent;
 }
@@ -111,16 +121,26 @@ body {
 }
 
 .terminal {
-  border: #000 solid 5px;
+  padding: 5px;
   font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
-  font-size: 11px;
+  font-size: 1em;
   color: #f0f0f0;
-  background: #000;
+  box-shadow: rgba(0, 0, 0, 0.5) 2px 2px 20px inset;
+  /* background: transparent - is set by Tab() */
 }
 
 .reverse-video {
   color: #000;
   background: #f0f0f0;
+}
+
+.window--run .result { 
+  background-color: #cfc; 
+  box-shadow: rgba(0, 0, 0, 0.5) 2px 2px 20px inset;
+  min-height: 3em;
+}
+.window--run .result.error { 
+  background-color: #fcc; 
 }
 
 /**
@@ -137,10 +157,9 @@ h1 {
   border-top: #e15729 solid 10px;
 }
 
-#open, #lights {
+#open, #lights, #run {
   font: 20px/1.5 sans-serif;
-  position: fixed;
-  right: 0;
+  position: absolute;
   padding: 10px;
   height: 50px;
   color: white;
@@ -153,7 +172,13 @@ h1 {
 
 #open {
   top: 10px;
+  left: 5%;
   background: #333;
+}
+
+#run {
+	top: 10px;
+	left: 10%;
 }
 
 #lights {
@@ -163,7 +188,7 @@ h1 {
   background: #555;
 }
 
-#open:hover, #lights:hover {
+#open:hover, #lights:hover, #run:hover {
   color: slategrey;
   background: white;
 }
@@ -173,6 +198,7 @@ h1 {
 }
 
 #help {
+	visibility: hidden;
   font: 12px/1.5 sans-serif;
   color: #999;
   position: fixed;
@@ -181,3 +207,125 @@ h1 {
 }
 
 .dark h1, .dark #help { display: none; }
+
+
+/*
+ * Window swoop animation
+ */
+ 
+.window {
+	/*-webkit-transition: all 1s;*/
+}
+
+.window.swoop-from-left {
+	left: -660px;
+}
+
+/*
+ * File list
+ */
+
+#files {
+	padding-left: 0px;
+	width: auto;
+}
+#files ul {
+	padding: 0px 10px 10px 15px;
+	overflow: hidden;
+    display: table;
+}
+#files li {
+    color: #444;
+}
+#files > li.FileItem-regular { 
+	color: black;  /* files at top level */
+	text-shadow: 2px 2px 2px #444;
+}
+.FileItem-dot {
+	display: none;
+}
+#files li.FileItem-regular {
+	list-style: none;
+	background: url(img/aroma/post-it-lined.png) no-repeat 0 6px;
+	padding-left: 32px;
+}
+#files li.FileItem-regular > a {
+	font-size: 1em;
+	line-height: 2;
+	display: table-cell;
+	height: 24px;
+	vertical-align: middle;
+}
+#files li.FileItem-directory {
+	list-style: none;
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
+#files li.FileItem-directory > a {
+	border-left: 1px solid grey;
+	border-right: 1px solid grey;
+	border-top: 1px solid grey;
+	border-radius: 11px 11px 0px 0px;
+	font-size: 16pt;
+	/*background: white;*/
+background: #d2dfed; /* Old browsers */
+background: -moz-linear-gradient(top,  #d2dfed 0%, #c8d7eb 26%, #bed0ea 51%, #a6c0e3 51%, #afc7e8 62%, #bad0ef 75%, #99b5db 88%, #799bc8 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d2dfed), color-stop(26%,#c8d7eb), color-stop(51%,#bed0ea), color-stop(51%,#a6c0e3), color-stop(62%,#afc7e8), color-stop(75%,#bad0ef), color-stop(88%,#99b5db), color-stop(100%,#799bc8)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2dfed', endColorstr='#799bc8',GradientType=0 ); /* IE6-9 */
+	color: black;
+	padding: 1px 7px;
+}
+#files li.FileItem-directory > ul {
+	margin-top: 0px;
+	padding-top: 7px;
+	border: 1px solid grey;
+	border-radius: 0px 11px 11px 11px;
+	background: rgba(241, 245, 249, 1);
+    box-shadow: rgba(121, 155, 200, 1) 0px 0px 15px inset;
+    min-width: 2em; 
+    height: 1em; /* essentially min-height because of display: table */
+}
+#files li.collapse > ul {
+	display: none;
+}
+#files li a {
+	cursor: default;
+}
+#files li a:hover {
+	background: #ddd;
+}
+
+/*
+ * Size Layout
+ */
+
+.CodeMirror {
+	height: 20em !important;
+	font-size: 1em;
+}
+
+/*
+ * Specific to regex
+ */
+.window--run .argument { display: block; box-sizing: border-box; width: 100%; border:0;  margin: 0; }
+.window--run .argument:focus { outline: none;  }
+.window--run .input,.argument { font-family: Monaco; font-size: 1em; }
+tr.input td { border-right: 2px solid rgba(0,0,0,0.2); }
+.result table { border-collapse: collapse; }
+.result.plaintext { font-family: Monaco; white-space: pre; }
+tr.matches { height: 0.75em; }
+.matches td { font-size: 1pt; }
+.tags td { text-align: center;  font-size: 1em;  }
+.matches .first { border-bottom-left-radius: 999px; } /*border-bottom-left-radius: 999px; }*/
+.matches .last { border-bottom-right-radius: 999px; } /* border-bottom-right-radius: 999px; }*/
+.matches .clr0 { background: #063; }
+.matches .clr1 { background: #933; }
+.matches .clr2 { background: #669; }
+.matches .clr3 { background: #C90; }
+.matches .clr4 { background: #309; }
+.matches .clr5 { background: #088; }
+.matches .clr6 { background: #898; }
