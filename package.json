@@ -26,10 +26,13 @@
     "xterm"
   ],
   "dependencies": {
+    "backbone": "^1.4.0",
     "express": "3.4.4",
+    "jquery": "^3.4.1",
     "node-pty": "github:microsoft/node-pty",
     "socket.io": "0.9.19",
-    "term.js": "0.0.2"
+    "term.js": "0.0.2",
+    "underscore": "^1.9.1"
   },
   "engines": {
     "node": ">= 0.8.0"
