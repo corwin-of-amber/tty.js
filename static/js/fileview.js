@@ -105,16 +105,30 @@ function cd(path) {
 }
 
 var fileview = {config: {hidden: ".", prune: ""}};
-var lastEditor = undefined;
+var editorWindow = undefined;
 
-function create_codemirror_in_window(textarea_id, title)
+function createWindow() {
+    var win = new tty.Window();
+    win.clientArea = $('<div>');
+    $(win.element).removeClass("window--terminal");
+    $(win.element).addClass("window--editor");
+    $(win.element).find(".terminal").replaceWith(win.clientArea);
+    // Override some unwanted methods from tty.js
+    win.tabs[0].setProcessName = function() {};
+    win.tabs[0].pollProcessName = function() {};
+
+    return win;
+}
+
+function create_codemirror_in_window(title)
 {
-    if ($(".CodeMirror").length > 0) {
-        $(lastEditor.window.title).text(title || "Untitled");
-        return lastEditor;
+    if (!editorWindow) {
+        editorWindow = createWindow();
     }
+
+    $(editorWindow.title).text(title || "Untitled");
     
-    var editor = CodeMirror.fromTextArea(document.getElementById(textarea_id), {
+    var editor = new CodeMirror(null, {
         lineNumbers: true,
         matchBrackets: true,
         mode: "text/x-java",
@@ -123,16 +137,30 @@ function create_codemirror_in_window(textarea_id, title)
         indentWithTabs: true,
         extraKeys: "basic"
     });
-    var win = new tty.Window();
-    $(win.element).removeClass("window--terminal");
-    $(win.element).addClass("window--editor");
-    $(win.element).find(".terminal").remove();
-    $(win.element).append($(".CodeMirror")); // get element from editor?
-    // Override some unwanted methods from tty.js
-    win.tabs[0].setProcessName = function() {};
-    win.tabs[0].pollProcessName = function() {};
-    $(win.title).text(title || "Untitled");
-    editor.window = win;
-    lastEditor = editor;
+
+    editorWindow.clientArea.html(editor.getWrapperElement());
+
+    editor.window = editorWindow;
     return editor;
 }
+
+
+
+var own_event = undefined;
+    
+fv.on('click-item', function(itemview) { 
+    var m = itemview.model;
+    if (m.get('kind') == "regular") {
+        var filepath = m.get('fullpath');
+        s.emit('fs load', filepath,
+              function(text) {
+                editor = create_codemirror_in_window(m.get('name'));
+                if (own_event) editor.off("change", own_event);
+                editor.setValue(text); 
+                editor.on("change", own_event = function(cm, co) {
+                    s.emit('fs save', filepath, cm.getValue(),
+                            function() {  });
+                });
+            });
+      }
+});

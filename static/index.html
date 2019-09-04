@@ -1,7 +1,8 @@
 <!doctype html>
 <title>tty.js</title>
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="user.css">
+<link rel="stylesheet" href="windows.css">
+<!-- <link rel="stylesheet" href="user.css"> -->
 
 <h1></h1>
 
@@ -19,13 +20,13 @@
 <script src="term.js"></script>
 <script src="options.js"></script>
 <script src="tty.js"></script>
-<script src="user.js"></script>
+<!-- <script src="user.js"></script> -->
 
 <!--  CodeMirror -->
-    <link rel="stylesheet" href="js/lib/codemirror/lib/codemirror.css">
-    <script src="js/lib/codemirror/lib/codemirror.js"></script>
-    <script src="js/lib/codemirror/addon/edit/matchbrackets.js"></script>
-    <script src="js/lib/codemirror/mode/clike/clike.js"></script>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css">
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/addon/edit/matchbrackets.js"></script>
+    <script src="codemirror/mode/clike/clike.js"></script>
 <!--   -->
 
 
@@ -47,24 +48,6 @@ $(function() {
     }
     Terminal.geometry[0] = 40;
     Terminal.geometry[1] = 14;
-
-    var own_event = undefined;
-    
-    fv.on('click-item', function(itemview) { 
-        var m = itemview.model;
-        if (m.get('kind') == "regular") {
-            s.emit('fs load', m.get('fullpath'),
-          	    function(text) {
-	                editor = create_codemirror_in_window("editor", m.get('name'));
-	                if (own_event) editor.off("change", own_event);
-	                editor.setValue(text); 
-	        	    editor.on("change", own_event = function(cm, co) {
-	        	    	s.emit('fs save', m.get('fullpath'), cm.getValue(),
-	        	    	        function() {  });
-	        	    });
-                });
-	      }
-    });
     
     $("#run").click(function () {
         var args = runner.config.args;
