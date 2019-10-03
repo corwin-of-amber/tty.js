@@ -587,6 +587,8 @@ function Tab(win, socket) {
   this.open();
   this.hookKeys();
 
+  this.element.style.background = "transparent";  // override Terminal
+
   win.tabs.push(this);
 
   this.socket.emit('create', cols, rows, function(err, data) {
