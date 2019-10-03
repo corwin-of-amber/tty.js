@@ -109,13 +109,11 @@ var editorWindow = undefined;
 
 function createWindow() {
     var win = new tty.Window();
-    win.clientArea = $('<div>');
+    win.clientArea = $('<div>').addClass('area');
     $(win.element).removeClass("window--terminal");
     $(win.element).addClass("window--editor");
-    $(win.element).find(".terminal").replaceWith(win.clientArea);
-    // Override some unwanted methods from tty.js
-    win.tabs[0].setProcessName = function() {};
-    win.tabs[0].pollProcessName = function() {};
+
+    $(win.element).append(win.clientArea);
 
     return win;
 }

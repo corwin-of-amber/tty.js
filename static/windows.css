@@ -1,4 +1,4 @@
-.window--editor { bottom: 50%; left: 35%; }
+.window--editor { top: 35%; left: 35%; height: 45%; }
 
 .window--run { left: 20%; top: 5em; min-width: 10em; min-height: 3em; }
 
@@ -85,8 +85,12 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2dfed', end
  * Size Layout
  */
 
-.CodeMirror {
-	height: 20em !important;
+.window--editor > .area {
+	height: 100%;
+}
+
+.window--editor .CodeMirror {
+	height: 100%;
 	font-size: 1em;
 }
 

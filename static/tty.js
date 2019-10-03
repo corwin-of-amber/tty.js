@@ -83,7 +83,7 @@ tty.open = function() {
 
   if (open) {
     on(open, 'click', function() {
-      new Window;
+      new Window().withTerminal();
     });
   }
 
@@ -248,17 +248,21 @@ function Window(socket, local_conf) {
 
   tty.windows.push(this);
 
-  this.createTab();
-  this.focus();
   this.bind();
+  this.focus();
+}
 
-  this.tabs[0].once('open', function() {
+inherits(Window, EventEmitter);
+
+Window.prototype.withTerminal = function() {
+  var self = this,
+      tab = this.createTab();
+
+  tab.once('open', function() {
     tty.emit('open window', self);
     self.emit('open');
   });
 }
-
-inherits(Window, EventEmitter);
 
 Window.prototype.bind = function() {
   var self = this
@@ -310,7 +314,8 @@ Window.prototype.focus = function() {
   }
 
   // Focus Foreground Tab
-  this.focused.focus();
+  if (this.focused)
+    this.focused.focus();
 
   tty.emit('focus window', this);
   this.emit('focus');
@@ -396,11 +401,13 @@ Window.prototype.resizing = function(ev) {
   el.style.opacity = '0.70';
   el.style.cursor = 'nwse-resize';
   root.style.cursor = 'nwse-resize';
-  term.element.style.height = '100%';
+  if (term)
+    term.element.style.height = '100%';
 
   function move(ev) {
     var x, y;
-    y = el.offsetHeight - term.element.clientHeight;
+    //y = el.offsetHeight - term.element.clientHeight;
+    y = self.bar.clientHeight;
     x = ev.pageX - el.offsetLeft;
     y = (ev.pageY - el.offsetTop) - y;
     el.style.width = x + 'px';
@@ -410,21 +417,24 @@ Window.prototype.resizing = function(ev) {
   function up() {
     var x, y;
 
-    x = el.clientWidth / resize.w;
-    y = el.clientHeight / resize.h;
-    x = (x * term.cols) | 0;
-    y = (y * term.rows) | 0;
+    if (term) {
+      x = el.clientWidth / resize.w;
+      y = el.clientHeight / resize.h;
+      x = (x * term.cols) | 0;
+      y = (y * term.rows) | 0;
 
-    self.resize(x, y);
+      self.resize(x, y);
 
-    el.style.width = '';
-    el.style.height = '';
+      el.style.width = '';
+      el.style.height = '';
+
+      term.element.style.height = '';
+    }
 
     el.style.overflow = '';
     el.style.opacity = '';
     el.style.cursor = '';
     root.style.cursor = '';
-    term.element.style.height = '';
 
     off(document, 'mousemove', move);
     off(document, 'mouseup', up);
@@ -667,6 +677,7 @@ Tab.prototype.focus = function() {
   this.handleTitle(this.title);
 
   this._focus();
+  this.element.focus(); // term.js has this commented out :/
 
   win.focus();
 
