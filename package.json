@@ -30,7 +30,7 @@
     "express": "^4.17.1",
     "jquery": "^3.4.1",
     "node-pty": "github:microsoft/node-pty",
-    "socket.io": "0.9.19",
+    "socket.io": "^2.3.0",
     "term.js": "0.0.7",
     "underscore": "^1.9.1"
   }
