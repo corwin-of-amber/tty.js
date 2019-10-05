@@ -76,3 +76,19 @@
 #files li a:hover {
 	background: #ddd;
 }
+
+
+/*
+ * Editor
+ */
+.window--editor { top: 35%; left: 35%; height: 45%; }
+
+.window--editor > .area {
+	height: 100%;
+}
+
+.window--editor .CodeMirror {
+	height: 100%;
+	font-size: 1em;
+	min-width: 15em;
+}

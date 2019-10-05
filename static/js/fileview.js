@@ -71,9 +71,9 @@ var FileView = Backbone.View.extend({
     el: $('#files'),
     initialize: function() {
         this.listenTo(this.model, 'add', this.addOne);
-        this.listenTo(this.model, 'reset', this.readdAll);
+        this.listenTo(this.model, 'reset', this.readAll);
         this.listenTo(this.model, 'remove', this.removed);
-        this.readdAll();
+        this.readAll();
     },
     addOne: function(item) {
         var view = new FileItemView({model: item});
@@ -81,7 +81,7 @@ var FileView = Backbone.View.extend({
         this.listenTo(view, 'click', function() { this.trigger('click-item', view); });
         this.listenTo(view, 'click-item', function(v) { this.trigger('click-item', v); });
     },
-    readdAll: function() {
+    readAll: function() {
         this.$el.children().remove();
         this.model.each(this.addOne, this);
     },
@@ -89,12 +89,15 @@ var FileView = Backbone.View.extend({
 });
 
 
-var fm = new FilesCollection();
-var fv = new FileView({model: fm});
+var fileview = {config: {hidden: ".", prune: ""}};
+fileview.io = io.connect();
 
-var s = io.connect();
+var fv = new FileView({model: new FilesCollection()});
 
-function cd(path) {
+fileview.cd = function(path) {
+    var s = fileview.io,
+        fm = fv.model;
+
     if (fv.$el.length === 0) {
         fv.$el = $('<ul>').attr('id', 'files').appendTo(document.body);
     }
@@ -108,5 +111,10 @@ function cd(path) {
     setInterval(refresh, 1500);
 }
 
-var fileview = {config: {hidden: ".", prune: ""}};
 
+fv.on('click-item', function(itemview) { 
+    var m = itemview.model;
+    if (m.get('kind') == "regular") {
+        editFile(m.get('name'), m.get('fullpath'));
+    }
+});
