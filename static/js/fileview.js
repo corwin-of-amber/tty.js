@@ -89,7 +89,7 @@ var FileView = Backbone.View.extend({
 });
 
 
-var fileview = {config: {hidden: ".", prune: ""}};
+var fileview = {config: {hidden: ".", prune: "", depth: 3}};
 fileview.io = io.connect();
 
 var fv = new FileView({model: new FilesCollection()});
@@ -104,7 +104,8 @@ fileview.cd = function(path) {
     function refresh() {
         fv.collapsed = $.makeArray(
                 fv.$el.find(".collapse > a").map(function() { return $(this).text(); }));
-        s.emit("fs find", path, function(x) { fm.path = path; fm.setAll(x, fm.path); });
+        s.emit("fs find", path, fileview.config.depth,
+            function(x) { fm.path = path; fm.setAll(x, fm.path); });
     }
     s.emit("fs load", path + "/.ttyrc", function(x) { if (x) eval(x); });
     refresh();

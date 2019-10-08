@@ -33,6 +33,7 @@
     "node-pty": "github:microsoft/node-pty",
     "socket.io": "^2.3.0",
     "term.js": "0.0.7",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "untildify": "^4.0.0"
   }
 }
