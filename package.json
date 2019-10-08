@@ -27,10 +27,13 @@
   ],
   "dependencies": {
     "backbone": "^1.4.0",
+    "codemirror": "^5.49.0",
     "express": "^4.17.1",
+    "jquery": "^3.4.1",
     "node-pty": "github:microsoft/node-pty",
     "socket.io": "^2.3.0",
     "term.js": "0.0.7",
-    "underscore": "^1.9.1"
+    "underscore": "^1.9.1",
+    "untildify": "^4.0.0"
   }
 }

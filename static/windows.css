@@ -1,0 +1,94 @@
+/*
+ * File list
+ */
+
+ #files {
+	padding-left: 0px;
+	width: auto;
+}
+#files ul {
+	padding: 0px 10px 10px 15px;
+	overflow: hidden;
+    display: table;
+}
+#files li {
+    color: #444;
+}
+#files > li.FileItem-regular { 
+	color: black;  /* files at top level */
+	text-shadow: 2px 2px 2px #444;
+}
+.FileItem-dot {
+	display: none;
+}
+#files li.FileItem-regular {
+	list-style: none;
+	background: url(img/file-icons/document.png) no-repeat 0 6px;
+	padding-left: 32px;
+}
+#files li.FileItem-regular > a {
+	font-size: 1em;
+	line-height: 2;
+	display: table-cell;
+	height: 24px;
+	vertical-align: middle;
+}
+#files li.FileItem-directory {
+	list-style: none;
+	margin-top: 7px;
+	margin-bottom: 7px;
+}
+#files li.FileItem-directory > a {
+	border-left: 1px solid grey;
+	border-right: 1px solid grey;
+	border-top: 1px solid grey;
+	border-radius: 11px 11px 0px 0px;
+	font-size: 120%;
+
+	background: #d2dfed; /* Old browsers */
+	background: -moz-linear-gradient(top,  #d2dfed 0%, #c8d7eb 26%, #bed0ea 51%, #a6c0e3 51%, #afc7e8 62%, #bad0ef 75%, #99b5db 88%, #799bc8 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#d2dfed), color-stop(26%,#c8d7eb), color-stop(51%,#bed0ea), color-stop(51%,#a6c0e3), color-stop(62%,#afc7e8), color-stop(75%,#bad0ef), color-stop(88%,#99b5db), color-stop(100%,#799bc8)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #d2dfed 0%,#c8d7eb 26%,#bed0ea 51%,#a6c0e3 51%,#afc7e8 62%,#bad0ef 75%,#99b5db 88%,#799bc8 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d2dfed', endColorstr='#799bc8',GradientType=0 ); /* IE6-9 */
+
+	color: black;
+	padding: 1px 7px;
+}
+#files li.FileItem-directory > ul {
+	margin-top: 0px;
+	padding-top: 7px;
+	border: 1px solid grey;
+	border-radius: 0px 11px 11px 11px;
+	background: rgba(241, 245, 249, 1);
+    box-shadow: rgba(121, 155, 200, 1) 0px 0px 15px inset;
+    min-width: 2em; 
+    height: 1em; /* essentially min-height because of display: table */
+}
+#files li.collapse > ul {
+	display: none;
+}
+#files li a {
+	cursor: default;
+}
+#files li a:hover {
+	background: #ddd;
+}
+
+
+/*
+ * Editor
+ */
+.window--editor { top: 35%; left: 35%; height: 45%; }
+
+.window--editor > .area {
+	height: 100%;
+}
+
+.window--editor .CodeMirror {
+	height: 100%;
+	font-size: 1em;
+	min-width: 15em;
+}
