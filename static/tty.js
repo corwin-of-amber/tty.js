@@ -70,7 +70,7 @@ tty.open = function() {
     root: document.documentElement,
     body: document.body,
     h1: document.getElementsByTagName('h1')[0],
-    open: document.getElementById('open'),
+    open: document.getElementById('terminal'),
     lights: document.getElementById('lights')
   };
 
@@ -256,6 +256,8 @@ Window.prototype.withTerminal = function() {
   var self = this,
       tab = this.createTab();
   
+  this.element.classList.add('window--terminal');
+
   tab.once('open', function() {
     tty.emit('open window', self);
     self.emit('open');
