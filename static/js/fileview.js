@@ -8,20 +8,28 @@ var FilesCollection = Backbone.Collection.extend({
         this.add(new FileItemModel({name: name}));
     },
     setAll: function(filenames, prefix) {
-        fc = this;
-        this.set(filenames.filter(this.visible).map(function(x) { 
-            return new FileItemModel({name: x[0]+x[1],
-                fullpath: prefix + "/" + x[0],
+        function recurse(item) {
+            return new FilesCollection().setAll(item[2], prefix + "/" + item[0]);
+        }
+
+        filenames = this.dirsFirst(filenames);
+
+        this.set(filenames.filter(this.visible).map((x) =>
+            new FileItemModel({name: x[0]+x[1],
+                fullpath: `${prefix}/${x[0]}`,
                 kind: (x[1]=='/' ? 'directory' : 'regular'),
-                subitems: (fc.recurse(x) ? new FilesCollection().setAll(x[2], prefix + "/" + x[0]) : undefined)}); 
-        }));
+                subitems: (this.enter(x) ? recurse(x) : undefined)})
+        ));
         return this;
     },
-    visible: function(item) {
-        return !match(fileview.config.hidden, item[0]) && item[0] != "lib";
+    dirsFirst(filenames) {
+        return _.sortBy(filenames, item => item[1] + item[0]);
     },
-    recurse: function(item) {
-        return item[1] == '/' && !match(fileview.config.prune, item[0]);
+    visible: function(item) {
+        return !fileview.config.hidden.some(pat => pat.exec(item[0]));
+    },
+    enter: function(item) {
+        return item[1] == '/' && !fileview.config.prune.some(pat => pat.exec(item[0]));
     }
 });
 
@@ -89,7 +97,7 @@ var FileView = Backbone.View.extend({
 });
 
 
-var fileview = {config: {hidden: ".", prune: "", depth: 3}};
+var fileview = {config: {hidden: [/^[.]/], prune: [], depth: 3}};
 fileview.io = io.connect();
 
 var fv = new FileView({model: new FilesCollection()});
