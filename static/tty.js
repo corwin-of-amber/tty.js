@@ -143,8 +143,8 @@ tty.open = function() {
   setInterval(function() {
     var i = tty.windows.length;
     while (i--) {
-      if (!tty.windows[i].focused) continue;
-      tty.windows[i].focused.pollProcessName();
+      if (tty.windows[i].focused instanceof Tab)
+        tty.windows[i].focused.pollProcessName();
     }
   }, 2 * 1000);
 
@@ -304,12 +304,7 @@ Window.prototype.bind = function() {
 };
 
 Window.prototype.focus = function() {
-  // Restack
-  var parent = this.element.parentNode;
-  if (parent) {
-    parent.removeChild(this.element);
-    parent.appendChild(this.element);
-  }
+  this.bringToFront();
 
   // Focus Foreground Tab
   if (this.focused)
@@ -318,6 +313,11 @@ Window.prototype.focus = function() {
   tty.emit('focus window', this);
   this.emit('focus');
 };
+
+Window.prototype.bringToFront = function() {
+  this.element.style.zIndex = 1 +
+    Math.max(0, ...tty.windows.map(w => w.element.style.zIndex));
+}
 
 Window.prototype.destroy = function() {
   if (this.destroyed) return;
@@ -351,11 +351,11 @@ Window.prototype.drag = function(ev) {
     pageY: ev.pageY
   };
 
-  el.style.opacity = '0.60';
-  el.style.cursor = 'move';
-  root.style.cursor = 'move';
-
   function move(ev) {
+    el.style.opacity = '0.60';
+    el.style.cursor = 'move';
+    root.style.cursor = 'move';
+  
     el.style.left =
       (drag.left + ev.pageX - drag.pageX) + 'px';
     el.style.top =
@@ -386,7 +386,7 @@ Window.prototype.drag = function(ev) {
 Window.prototype.resizing = function(ev) {
   var self = this
     , el = this.element
-    , term = this.focused;
+    , term = (this.focused instanceof Tab) ? this.focused : null;
 
   if (this.minimize) delete this.minimize;
 
@@ -397,8 +397,8 @@ Window.prototype.resizing = function(ev) {
 
   el.style.overflow = 'hidden';
   el.style.opacity = '0.70';
-  el.style.cursor = 'se-resize';
-  root.style.cursor = 'se-resize';
+  el.style.cursor = 'nwse-resize';
+  root.style.cursor = 'nwse-resize';
   if (term)
     term.element.style.height = '100%';
 
@@ -447,6 +447,8 @@ Window.prototype.maximize = function() {
     , term = this.focused
     , x
     , y;
+
+  if (!(term instanceof Tab)) return; // Not implemented
 
   var m = {
     cols: term.cols,

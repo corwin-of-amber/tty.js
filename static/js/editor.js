@@ -25,6 +25,7 @@ function createEditorWindow(title)
     });
 
     editor.window = editorWindow;
+    editorWindow.focused = editor;
     return editor;
 }
 
