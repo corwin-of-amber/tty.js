@@ -23,6 +23,7 @@
   <body>
       <h1>
         <button id="terminal"></button>
+        <button id="run">▶</button>
       </h1>
 
       <button id="lights">Light Switch</button>
@@ -37,11 +38,15 @@
 
       <script src="tty.js"></script>
 
+      <script>tty.Terminal.geometry = [41, 9];</script>
+
       <!-- addon scripts and styles -->
       <link rel="stylesheet" type="text/css" href="windows.css">
       <script src="js/fileview.js"></script>
       <script>fileview.cd('~');</script>
 
       <script src="js/editor.js"></script>
+
+      <script src="js/runner.js"></script>
   </body>
 </html>

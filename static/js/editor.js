@@ -1,20 +1,13 @@
 var editorWindow = undefined;
 
-function createWindow() {
-    var win = new tty.Window();
-    win.clientArea = $('<div>').addClass('area');
-    $(win.element).removeClass("window--terminal");
-    $(win.element).addClass("window--editor");
-
-    $(win.element).append(win.clientArea);
-
-    return win;
-}
-
 function createEditorWindow(title)
 {
     if (!editorWindow) {
-        editorWindow = createWindow();
+        var win = new tty.Window();
+        $(win.element).addClass("window--editor")
+            .append(win.clientArea = $('<div>').addClass('area'));
+
+        editorWindow = win;
     }
 
     $(editorWindow.title).text(title || "Untitled");
@@ -24,7 +17,7 @@ function createEditorWindow(title)
     var editor = new CodeMirror(editorWindow.clientArea[0], {
         lineNumbers: true,
         matchBrackets: true,
-        mode: "text/x-java",
+        mode: "text/x-c++src",
         indentUnit: 3,
         tabSize: 3,
         indentWithTabs: true,

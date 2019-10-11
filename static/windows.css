@@ -85,6 +85,7 @@
 /*
  * Editor
  */
+
 .window--editor { top: 35%; left: 35%; height: 45%; }
 
 .window--editor > .area {
@@ -95,4 +96,55 @@
 	height: 100%;
 	font-size: 1em;
 	min-width: 15em;
+}
+
+
+/*
+ * Runner
+ */
+
+.window--runner { left: 30%; }
+
+.window--runner .area {
+	display: flex;
+	flex-direction: column;
+	background: #7e9fcb;
+	box-shadow: rgba(0, 0, 0, 0.5) 2px 2px 20px inset;
+
+	font-family: monospace;
+	font-size: 18px;
+}
+
+.window--runner .arguments {
+	display: flex;
+	flex-direction: column;
+}
+
+.window--runner input {
+	background: none;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	font-family: inherit;
+	font-size: inherit;
+	color: #dbe3ef;
+	padding: 2px;
+}
+.window--runner input:focus {
+	outline: none;
+	background: rgba(255, 255, 255, 0.1)
+}
+
+.window--runner .output {
+	color: navajowhite;
+	white-space: pre;
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	padding: 2px 2px 10px 2px;
+}
+
+.window--runner .fail .error {
+	color: rgb(151, 1, 1);
+	padding: 2px 2px 10px 7px;
+}
+
+.window--runner .success .error {
+	display: none;
 }
