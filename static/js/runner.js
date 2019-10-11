@@ -4,7 +4,16 @@ class Runner {
     constructor() {
         this.activeWindow = null;
 
+        this.scriptPath = "~/_runner";
+
         $('button#run').click(() => this.run());
+
+        document.addEventListener('keydown', ev => {
+            if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
+                ev.stopPropagation();
+                this.rerun();
+            }
+        }, {capture: true});
     }
 
     async run() {
@@ -16,6 +25,11 @@ class Runner {
             this.start('~/a.out'); // default operation
     }
 
+    rerun() {
+        if (this.activeWindow) this.activeWindow.exec();
+        else this.run();
+    }
+
     start(prog, argsDefault=[], stdinDefault=null) {
         var w = this.activeWindow || (this.activeWindow = new RunnerWindow);
 
@@ -24,7 +38,7 @@ class Runner {
 
     readScript() {
         return new Promise((resolve, reject) =>
-            fileview.io.emit('fs load', '~/_runner', (out, err) => {
+            fileview.io.emit('fs load', this.scriptPath, (out, err) => {
                 if (err)
                     err.code == 'ENOENT' ? resolve(null) : reject(err);
                 else
@@ -57,13 +71,13 @@ class RunnerWindow {
         // Add one <input> per argument
         var args = $('<div>').addClass('arguments');
         for (let argval of argsDefault)
-            args.append($('<input>').attr('spellcheck', false).val(argval));
+            args.append(this._inputbox().val(argval));
         area.append(args);
 
         // Add <input> for stdin if applicable
         if (stdinDefault) {
             var in_ = $('<div>').addClass('input');
-            in_.append($('<input>').val(stdinDefault));
+            in_.append(this._inputbox().val(stdinDefault));
             area.append(in_);
         }
 
@@ -75,7 +89,7 @@ class RunnerWindow {
 
         this.ui = {args, in_, out, err};
 
-        args.on('input', 'input', () => this.exec());
+        area.on('input', 'input', () => this.exec());
 
         this.exec();
     }
@@ -84,8 +98,19 @@ class RunnerWindow {
         return this.ui.args.find('input').map((_, e) => e.value);
     }
 
+    _inputbox(val) {
+        return $('<input>').attr('spellcheck', false);
+    }
+
+    optvals() {
+        var opts = {};
+        if (this.ui.in_)
+            opts.stdinContents = this.ui.in_.find('input').val();
+        return opts;
+    }
+
     exec() {
-        fileview.io.emit('exec', [this.prog, ...this.argvals()], {},
+        fileview.io.emit('exec', [this.prog, ...this.argvals()], this.optvals(),
             (out) => {
                 this.ui.out.text(out.all);
                 this.ui.err.text(out.failed ? 
