@@ -20,7 +20,7 @@
 }
 #files > li.FileItem-regular { 
 	color: black;  /* files at top level */
-	text-shadow: 2px 2px 2px #444;
+	text-shadow: 2px 2px 2px rgba(68, 68, 68, 0.5);
 }
 .FileItem-dot {
 	display: none;
@@ -66,7 +66,7 @@
 	padding-top: 7px;
 	border: 1px solid grey;
 	border-radius: 0px 11px 11px 11px;
-	background: rgba(241, 245, 249, 1);
+	background: rgba(241, 245, 249, 0.75);
     box-shadow: rgba(121, 155, 200, 1) 0px 0px 15px inset;
     min-width: 2em; 
     height: 1em; /* essentially min-height because of display: table */
@@ -81,6 +81,7 @@
 	background: #ddd;
 }
 
+#help { display: none; }
 
 /*
  * Editor
@@ -143,6 +144,7 @@
 .window--runner .fail .error {
 	color: rgb(151, 1, 1);
 	padding: 2px 2px 10px 7px;
+	font-family: serif;
 }
 
 .window--runner .success .error {

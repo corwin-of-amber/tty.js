@@ -110,6 +110,11 @@ body {
   color: #f0f0f0;
   box-shadow: rgba(0, 0, 0, 0.5) 2px 2px 20px inset;
   /* background: transparent - is set by Tab() */
+  white-space: nowrap;
+}
+
+.terminal div {
+  line-height: 1.2;
 }
 
 .reverse-video {
