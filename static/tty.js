@@ -600,7 +600,9 @@ function Tab(win, socket) {
 
   win.tabs.push(this);
 
-  this.socket.emit('create', cols, rows, function(err, data) {
+  var cwd = tty.conf && tty.conf.cwd;
+
+  this.socket.emit('create', {cols, rows, cwd}, function(err, data) {
     if (err) return self._destroy();
     self.pty = data.pty;
     self.id = data.id;
@@ -923,6 +925,13 @@ tty.Tab = Tab;
 tty.Terminal = Terminal;
 
 this.tty = tty;
+
+$(function() {
+  if (tty.conf && tty.conf.startup) {
+    for (let cmd of tty.conf.startup)
+      eval(cmd);
+  }
+});
 
 }).call(function() {
   return this || (typeof window !== 'undefined' ? window : global);

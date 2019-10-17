@@ -11,27 +11,24 @@ class Runner {
         document.addEventListener('keydown', ev => {
             if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
                 ev.stopPropagation();
-                this.rerun();
+                this.run();
             }
         }, {capture: true});
+
+        this.script = () => this.start('~/a.out'); // default operation
     }
 
-    async run() {
-        var script = await this.readScript();
-
-        if (script)
-            eval(script);
-        else
-            this.start('~/a.out'); // default operation
-    }
-
-    rerun() {
-        if (this.activeWindow) this.activeWindow.exec();
-        else this.run();
+    run() {
+        if (this.activeWindow && this.activeWindow.script == this.script)
+            this.activeWindow.exec();
+        else {
+            this.script();
+            if (this.activeWindow) this.activeWindow.script = this.script;
+        }
     }
 
     start(prog, argsDefault=[], stdinDefault=null) {
-        var w = this.activeWindow || (this.activeWindow = new RunnerWindow);
+        var w = this.activeWindow || this.createWindow();
 
         w.start(prog, argsDefault, stdinDefault);
     }
@@ -45,6 +42,12 @@ class Runner {
                     resolve(out);
             })
         );
+    }
+
+    createWindow() {
+        this.activeWindow = new RunnerWindow;
+        this.activeWindow.win.on('close', () => this.activeWindow = undefined);
+        return this.activeWindow;
     }
 }
 
@@ -98,8 +101,12 @@ class RunnerWindow {
         return this.ui.args.find('input').map((_, e) => e.value);
     }
 
-    _inputbox(val) {
-        return $('<input>').attr('spellcheck', false);
+    _inputbox() {
+        return $('<input>').attr('spellcheck', false)
+            .on('input', (ev) => {
+                // auto-resize hack
+                ev.target.size = ev.target.value.length;
+            });
     }
 
     optvals() {

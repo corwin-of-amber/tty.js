@@ -97,27 +97,32 @@ var FileView = Backbone.View.extend({
 });
 
 
-var fileview = {config: {hidden: [/^[.]/], prune: [], depth: 3}};
+var fileview = {config: {hidden: [/^[._]/], prune: [], depth: 3}};
 fileview.io = io.connect();
 
 var fv = new FileView({model: new FilesCollection()});
 
-fileview.cd = function(path) {
+fileview.refresh = function(path) {
     var s = fileview.io,
         fm = fv.model;
+
+    path = path || fm.path || "~";
+
+    fv.collapsed = $.makeArray(
+            fv.$el.find(".collapse > a").map(function() { return $(this).text(); }));
+    s.emit("fs find", path, fileview.config.depth,
+        function(x) { fm.path = path; fm.setAll(x, fm.path); });
+}
+
+fileview.cd = function(path) {
 
     if (fv.$el.length === 0) {
         fv.$el = $('<ul>').attr('id', 'files').appendTo(document.body);
     }
-    function refresh() {
-        fv.collapsed = $.makeArray(
-                fv.$el.find(".collapse > a").map(function() { return $(this).text(); }));
-        s.emit("fs find", path, fileview.config.depth,
-            function(x) { fm.path = path; fm.setAll(x, fm.path); });
-    }
-    s.emit("fs load", path + "/.ttyrc", function(x) { if (x) eval(x); });
-    refresh();
-    setInterval(refresh, 1500);
+    
+    fileview.refresh(path);
+    if (!fileview._interval)
+        fileview._interval = setInterval(fileview.refresh, 1500);
 }
 
 
