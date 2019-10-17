@@ -1,5 +1,5 @@
 .window--terminal {
-	left: 30%;
+	left: 50%;
 }
 
 /*
@@ -81,13 +81,13 @@
 	background: #ddd;
 }
 
-#help { display: none; }
+#help, #lights { display: none; }
 
 /*
  * Editor
  */
 
-.window--editor { top: 35%; left: 35%; height: 45%; }
+.window--editor { top: 45%; left: 35%; height: 45%; width: 55%; }
 
 .window--editor > .area {
 	height: 100%;
@@ -107,6 +107,7 @@
 .window--runner { left: 30%; }
 
 .window--runner .area {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	background: #7e9fcb;
@@ -122,6 +123,7 @@
 }
 
 .window--runner input {
+	width: 100%;
 	background: none;
 	border: 1px solid rgba(0, 0, 0, 0.05);
 	font-family: inherit;
@@ -138,7 +140,7 @@
 	color: navajowhite;
 	white-space: pre;
 	border: 1px solid rgba(0, 0, 0, 0.05);
-	padding: 2px 2px 10px 2px;
+	padding: 2px 10px 10px 2px;
 }
 
 .window--runner .fail .error {
@@ -149,4 +151,22 @@
 
 .window--runner .success .error {
 	display: none;
+}
+
+/*
+ * Macros
+ */
+
+h1 div.macros{
+	display: inline-block;
+}
+
+h1 div.macros button {
+    font-size: 20px;
+    border: 1px solid #8599ad;
+    border-radius: 50px;
+    width: 35px;
+    height: 35px;
+	margin-top: 7px;
+	margin-right: 5px;
 }
