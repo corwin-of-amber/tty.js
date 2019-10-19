@@ -163,6 +163,12 @@ h1 button:active {
 
 button#terminal {
   background-image: url(img/term.png);
+}
+button#run {
+  background-image: url(img/play.png);
+}
+button#terminal,
+button#run {
   background-size: 75%;
   background-repeat: no-repeat;
   background-position: center;
