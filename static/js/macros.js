@@ -13,6 +13,14 @@ class Macros {
         this.items.push(macro);
         this.toolbar.append(macro.button);
     }
+
+    highlight(macro) {
+        this.toolbar.find('.on').removeClass('on');
+        if (typeof macro == 'string')
+            macro = this.items.find(m => m.name === macro);
+        if (macro)
+            macro.button.addClass('on');
+    }
 }
 
 

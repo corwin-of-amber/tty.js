@@ -104,7 +104,7 @@
  * Runner
  */
 
-.window--runner { left: 30%; }
+.window--runner { left: 30%; min-width: 15em; }
 
 .window--runner .area {
 	height: 100%;
@@ -136,7 +136,8 @@
 	background: rgba(255, 255, 255, 0.1)
 }
 
-.window--runner .output {
+.window--runner .output,
+.window--runner .output-styled {
 	color: navajowhite;
 	white-space: pre;
 	border: 1px solid rgba(0, 0, 0, 0.05);
@@ -157,8 +158,9 @@
  * Macros
  */
 
-h1 div.macros{
+h1 div.macros {
 	display: inline-block;
+	margin-left: 2px;
 }
 
 h1 div.macros button {
@@ -169,4 +171,12 @@ h1 div.macros button {
     height: 35px;
 	margin-top: 7px;
 	margin-right: 5px;
+	box-sizing: border-box;
+}
+
+h1 div.macros button.on {
+	background: #e8dea8;
+	border: 1px solid #f6f3e1;
+	color: #333;
+	text-shadow: 0px 0px 1px black;
 }
