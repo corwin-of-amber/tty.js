@@ -899,8 +899,30 @@ function sanitize(text) {
   return (text + '').replace(/[&<>]/g, '')
 }
 
+function loadResource(uri) {
+  var el;
+  if (uri.endsWith('.css')) {
+    el = document.createElement('link');
+    el.rel = "stylesheet";
+    el.type = "text/css";
+    el.href = uri;
+  }
+  else {
+    el = document.createElement('script');
+    el.src = uri;
+  }
+  document.body.appendChild(el);
+}
+
+function loadResources(...uris) {
+  for (let uri of uris) {
+    if (Array.isArray(uri)) loadResources(...uri);
+    else loadResource(uri);
+  }
+}
+
 /**
- * Load
+ * Startup
  */
 
 function load() {
@@ -910,6 +932,10 @@ function load() {
   off(document, 'load', load);
   off(document, 'DOMContentLoaded', load);
   tty.open();
+
+  if (tty.conf && tty.conf.startup) {
+    tty.conf.startup.forEach(eval);
+  }
 }
 
 on(document, 'load', load);
@@ -926,12 +952,7 @@ tty.Terminal = Terminal;
 
 this.tty = tty;
 
-$(function() {
-  if (tty.conf && tty.conf.startup) {
-    for (let cmd of tty.conf.startup)
-      eval(cmd);
-  }
-});
+this.loadResources = loadResources;
 
 }).call(function() {
   return this || (typeof window !== 'undefined' ? window : global);

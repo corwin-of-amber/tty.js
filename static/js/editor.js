@@ -40,10 +40,16 @@ function editFile(title, filepath) {
             editor.off("change", editorChangeEh);
 
         editor = createEditorWindow(title);
+        editor.filename = filepath;
         editor.setValue(text); 
         editor.on("change", editorChangeEh = function(cm, co) {
             s.emit('fs save', filepath, cm.getValue(),
                    function() {  });
+        });
+
+        editor.window.on("close", () => {
+            editor.off("change", editorChangeEh);
+            editor = editorChangeEh = editorWindow = undefined;
         });
     });
 }
