@@ -11,7 +11,7 @@ class Runner {
         document.addEventListener('keydown', ev => {
             if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey)) {
                 ev.stopPropagation();
-                this.run();
+                this.rerun();
             }
         }, {capture: true});
 
@@ -19,18 +19,22 @@ class Runner {
     }
 
     run() {
+        this.script();
+        if (this.activeWindow) this.activeWindow.script = this.script;
+    }
+
+    rerun() {
         if (this.activeWindow && this.activeWindow.script == this.script)
             this.activeWindow.exec();
         else {
-            this.script();
-            if (this.activeWindow) this.activeWindow.script = this.script;
+            this.run();
         }
     }
 
-    start(prog, argsDefault=[], stdinDefault=null) {
+    start(prog, argsDefault=[], stdinDefault=null, styler=null) {
         var w = this.activeWindow || this.createWindow();
 
-        w.start(prog, argsDefault, stdinDefault);
+        w.start(prog, argsDefault, stdinDefault, styler);
     }
 
     readScript() {
@@ -55,7 +59,6 @@ class RunnerWindow {
 
     constructor() {
         this.win = this.create();
-        this.argc = 2;
     }
 
     create() {
@@ -65,7 +68,7 @@ class RunnerWindow {
         return win;
     }
 
-    start(prog, argsDefault=[], stdinDefault=null) {
+    start(prog, argsDefault=[], stdinDefault=null, styler=null) {
         this.prog = prog;
 
         var area = this.win.clientArea;
@@ -90,6 +93,8 @@ class RunnerWindow {
         var err = $('<div>').addClass('error');
         area.append(err);
 
+        this.styler = styler;
+
         this.ui = {args, in_, out, err};
 
         area.on('input', 'input', () => this.exec());
@@ -103,10 +108,15 @@ class RunnerWindow {
 
     _inputbox() {
         return $('<input>').attr('spellcheck', false)
-            .on('input', (ev) => {
-                // auto-resize hack
-                ev.target.size = ev.target.value.length;
-            });
+            .on('input', (ev) => this._autosize(ev.target));
+    }
+
+    /* input autosize hack */
+    _autosize(input) { input.size = input.value.length; }
+
+    _autosizeAll() { 
+        var area = this.win.clientArea;
+        for (let x of area.find('input')) this._autosize(x);
     }
 
     optvals() {
@@ -117,9 +127,20 @@ class RunnerWindow {
     }
 
     exec() {
-        fileview.io.emit('exec', [this.prog, ...this.argvals()], this.optvals(),
+        this._autosizeAll();
+
+        var argvals = this.argvals(), optvals = this.optvals();
+
+        fileview.io.emit('exec', [this.prog, ...argvals], optvals,
             (out) => {
-                this.ui.out.text(out.all);
+                if (!this.styler || out.failed) {
+                    this.ui.out.text(out.all);
+                    this.ui.out.removeClass('styled');
+                }
+                else {
+                    this.ui.out.html(this.styler(out.stdout, argvals, optvals));
+                    this.ui.out.addClass('styled');
+                }
                 this.ui.err.text(out.failed ? 
                     `failed: ${this._errText(out)}` : '');
                 this.win.clientArea.removeClass(['success', 'fail']);
