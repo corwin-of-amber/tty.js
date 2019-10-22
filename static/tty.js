@@ -223,12 +223,18 @@ function Window(socket) {
   title.className = 'title';
   title.innerHTML = '';
 
+  close = document.createElement('div');
+  close.innerHTML = '⨯';
+  close.title = 'close';
+  close.className = 'win-close';
+
   this.socket = socket || tty.socket;
   this.element = el;
   this.grip = grip;
   this.bar = bar;
   this.button = button;
   this.title = title;
+  this.close = close;
 
   this.tabs = [];
   this.focused = null;
@@ -240,6 +246,7 @@ function Window(socket) {
   el.appendChild(bar);
   bar.appendChild(button);
   bar.appendChild(title);
+  bar.appendChild(close);
   body.appendChild(el);
 
   tty.windows.push(this);
@@ -276,6 +283,11 @@ Window.prototype.bind = function() {
     } else {
       self.createTab();
     }
+    return cancel(ev);
+  });
+
+  on(this.close, 'click', function(ev) {
+    self.destroy();
     return cancel(ev);
   });
 

@@ -74,7 +74,7 @@ body {
 
 .title {
   position: absolute;
-  right: 5px;
+  right: 15px;
   top: 2px;
   font-size: 11px;
   cursor: default;
@@ -92,6 +92,13 @@ body {
   font-weight: bold;
 }
 
+.win-close {
+  font-size: 13px;
+  position: absolute;
+  top: 0px;
+  right: 2px;
+  cursor: pointer;
+}
 .grip {
   position: absolute;
   bottom: -10px;
