@@ -97,7 +97,7 @@ var FileView = Backbone.View.extend({
 });
 
 
-var fileview = {config: {hidden: [/^[._]/], prune: [], depth: 3}};
+var fileview = {config: {hidden: [/^[._]/, /[.]tmp$/], prune: [], depth: 3}};
 fileview.io = io.connect();
 
 var fv = new FileView({model: new FilesCollection()});
