@@ -922,8 +922,9 @@ function loadResource(uri) {
   else {
     el = document.createElement('script');
     el.src = uri;
+    el.async = false;
   }
-  document.body.appendChild(el);
+  document.head.appendChild(el);
 }
 
 function loadResources(...uris) {
