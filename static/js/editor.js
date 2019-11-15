@@ -30,7 +30,7 @@ function createEditorWindow(title)
 }
 
 
-var editor, editorChangeEh;
+var editor, editorChangeEh, editorCloseEh;
 
 function editFile(title, filepath) {
     var s = fileview.io;
@@ -47,10 +47,13 @@ function editFile(title, filepath) {
                    function() {  });
         });
 
-        editor.window.on("close", () => {
-            editor.off("change", editorChangeEh);
-            editor = editorChangeEh = editorWindow = undefined;
-        });
+        if (!editorCloseEh) {
+            editor.window.on("close", editorCloseEh = () => {
+                editor.off("change", editorChangeEh);
+                editor.window.off("close", editorCloseEh);
+                editor = editorChangeEh = editorCloseEh = editorWindow = undefined;
+            });
+        }
     });
 }
 
